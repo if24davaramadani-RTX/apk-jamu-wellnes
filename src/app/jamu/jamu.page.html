@@ -1,0 +1,109 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>Daftar Jamu</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleFavoriteFilter()" [color]="showOnlyFavorites ? 'danger' : 'medium'">
+        <ion-icon slot="icon-only" [name]="showOnlyFavorites ? 'heart' : 'heart-outline'"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar
+      placeholder="Cari nama atau khasiat..."
+      [(ngModel)]="searchQuery"
+      (ionInput)="onSearch($event)"
+      (ionClear)="clearSearch()">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Skeleton Loading (Langkah 2) -->
+  <div *ngIf="isLoading" class="jamu-container">
+    <div *ngFor="let i of [1,2,3,4]">
+      <ion-card style="margin-bottom: 20px; border-radius: 16px;">
+        <ion-skeleton-text animated style="width: 100%; height: 180px;"></ion-skeleton-text>
+        <ion-card-header>
+          <ion-skeleton-text animated style="width: 60%; height: 20px;"></ion-skeleton-text>
+        </ion-card-header>
+        <ion-card-content>
+          <ion-skeleton-text animated style="width: 80%; height: 15px;"></ion-skeleton-text>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+
+  <!-- Status Pencarian -->
+  <div class="search-info" *ngIf="!isLoading && (searchQuery || showOnlyFavorites)">
+    <ion-chip color="primary" *ngIf="searchQuery">
+      <ion-icon name="search-outline"></ion-icon>
+      <ion-label>{{ filteredJamu.length }} hasil</ion-label>
+    </ion-chip>
+    <ion-chip color="danger" *ngIf="showOnlyFavorites">
+      <ion-icon name="heart"></ion-icon>
+      <ion-label>Favorit</ion-label>
+    </ion-chip>
+  </div>
+
+  <!-- Jika Kosong -->
+  <div class="empty-state" *ngIf="!isLoading && filteredJamu.length === 0">
+    <ion-icon [name]="showOnlyFavorites ? 'heart-dislike-outline' : 'leaf-outline'"></ion-icon>
+    <h3>Tidak ada data</h3>
+    <p>Silakan sesuaikan pencarian atau filter kamu.</p>
+  </div>
+
+  <!-- Grid Daftar Jamu -->
+  <div class="jamu-container" *ngIf="!isLoading">
+    <ion-card *ngFor="let item of filteredJamu" class="jamu-card">
+      <div class="image-placeholder" (click)="openDetail(item)">
+        <img *ngIf="item.image" [src]="item.image" [alt]="item.name" />
+        <div *ngIf="!item.image" class="empty-image">
+          <ion-icon name="leaf"></ion-icon>
+        </div>
+        
+        <!-- Tombol Hati -->
+        <div class="favorite-badge" (click)="toggleFavorite($event, item.name)">
+          <ion-icon [name]="isJamuFavorite(item.name) ? 'heart' : 'heart-outline'" 
+                    [color]="isJamuFavorite(item.name) ? 'danger' : 'light'"></ion-icon>
+        </div>
+      </div>
+      <ion-card-header (click)="openDetail(item)">
+        <ion-card-title>{{ item.name }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content (click)="openDetail(item)">
+        <p><ion-icon name="medkit-outline" style="color: #2dd36f; margin-right: 5px;"></ion-icon>{{ item.khasiat }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Modal Detail -->
+  <ion-modal [isOpen]="showModal" (didDismiss)="closeModal()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Detail Jamu</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="closeModal()">Tutup</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding" *ngIf="selectedJamu">
+        <div class="detail-image">
+          <img *ngIf="selectedJamu.image" [src]="selectedJamu.image" />
+          <div *ngIf="!selectedJamu.image" class="detail-empty-image">
+            <ion-icon name="leaf"></ion-icon>
+          </div>
+        </div>
+        <h2>{{ selectedJamu.name }}</h2>
+        <p><strong>Khasiat:</strong> {{ selectedJamu.khasiat }}</p>
+        <hr>
+        <p>{{ selectedJamu.name }} merupakan tanaman herbal yang berkhasiat untuk {{ selectedJamu.khasiat }}. Gunakan secara teratur sesuai aturan pakai tradisional.</p>
+        
+        <ion-button expand="block" (click)="toggleFavorite(null, selectedJamu.name)" [color]="isJamuFavorite(selectedJamu.name) ? 'danger' : 'primary'">
+          <ion-icon slot="start" [name]="isJamuFavorite(selectedJamu.name) ? 'heart' : 'heart-outline'"></ion-icon>
+          {{ isJamuFavorite(selectedJamu.name) ? 'Hapus dari Favorit' : 'Tambah ke Favorit' }}
+        </ion-button>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>

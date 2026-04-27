@@ -1,0 +1,132 @@
+<ion-header class="ion-no-border profil-header">
+  <ion-toolbar color="transparent">
+    <ion-title>Profil Saya</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="profil-content">
+  <div class="profil-container">
+
+    <!-- Avatar & Nama -->
+    <div class="avatar-section">
+      <div class="avatar-circle" (click)="changePhoto()">
+        <img *ngIf="profileImage" [src]="profileImage" class="profile-img-preview">
+        <span *ngIf="!profileImage" class="avatar-initials">{{ getInitials() }}</span>
+        <div class="camera-overlay">
+          <ion-icon name="camera-outline"></ion-icon>
+        </div>
+      </div>
+      <h2 class="user-name">{{ userName }}</h2>
+      <p class="user-email">@{{ username }}</p>
+    </div>
+
+    <!-- Kartu Streak & Penghargaan -->
+    <div style="display: flex; gap: 12px; margin-bottom: 28px;">
+      <div class="streak-card" style="flex: 1; margin-bottom: 0;">
+        <div class="streak-item">
+          <span class="streak-number">🔥 {{ streakDays }}</span>
+          <span class="streak-label">Hari Berturut-turut</span>
+        </div>
+      </div>
+
+      <div class="streak-card award-card" style="flex: 1; margin-bottom: 0;" [class.unlocked]="streakDays >= 7">
+        <div class="streak-item" *ngIf="streakDays >= 7">
+          <span class="streak-number" style="font-size: 32px; margin-bottom: 2px;">🏆</span>
+          <span class="streak-label" style="color: #FFD700; font-weight: bold;">Pejuang Sehat</span>
+        </div>
+        <div class="streak-item" *ngIf="streakDays < 7" style="opacity: 0.5;">
+          <span class="streak-number" style="font-size: 24px; filter: grayscale(100%);">🔒</span>
+          <span class="streak-label" style="font-size: 11px; text-align: center; margin-top: 5px;">Minum 7 Hari untuk Buka</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Info User -->
+    <div class="info-section">
+      <div class="info-card" (click)="editName()" style="cursor: pointer;">
+        <ion-icon name="person-outline" class="info-icon"></ion-icon>
+        <div class="info-text">
+          <span class="info-label">Nama (Klik untuk ganti)</span>
+          <span class="info-value">{{ userName }}</span>
+        </div>
+        <ion-icon name="pencil-outline" style="color: #2ecc71; font-size: 18px;"></ion-icon>
+      </div>
+
+      <div class="info-card">
+        <ion-icon name="person-circle-outline" class="info-icon"></ion-icon>
+        <div class="info-text">
+          <span class="info-label">Username</span>
+          <span class="info-value">{{ username }}</span>
+        </div>
+      </div>
+
+      <div class="info-card">
+        <ion-icon name="calendar-outline" class="info-icon"></ion-icon>
+        <div class="info-text">
+          <span class="info-label">Bergabung sejak</span>
+          <span class="info-value">{{ joinDate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grafik Kesehatan -->
+    <div class="chart-section" style="margin-bottom: 36px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 5px;">
+        <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0;">Grafik Kesehatan Mingguan</h3>
+        <ion-button size="small" fill="outline" style="--color: #2ecc71; --border-color: #2ecc71; margin: 0;" (click)="updateHealthToday()">+ Evaluasi</ion-button>
+      </div>
+      <div class="chart-card">
+        <div class="chart-bars">
+          <div class="bar-item" *ngFor="let data of healthData">
+            <div class="bar-value">{{ data.value }}%</div>
+            <div class="bar-track">
+              <div class="bar-fill" [style.height]="data.value + '%'" [style.background-color]="data.color"></div>
+            </div>
+            <div class="bar-label">{{ data.day }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Fitur Saya -->
+    <div class="features-section" style="margin-bottom: 36px;">
+      <h3 style="font-size: 16px; font-weight: 700; color: #ffffff; margin: 0 0 16px 5px;">Fitur Saya</h3>
+      
+      <div class="feature-item" (click)="addCustomRecipe()">
+        <div class="icon-circle recipe-icon">
+          <ion-icon name="add-circle-outline"></ion-icon>
+        </div>
+        <div class="info-text">
+          <span class="info-label">Koleksi Pribadi</span>
+          <span class="info-value">Tambah Resep Jamu Sendiri</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" style="color: #666;"></ion-icon>
+      </div>
+
+      <div class="feature-item" (click)="shareApp()">
+        <div class="icon-circle share-icon">
+          <ion-icon name="share-social-outline"></ion-icon>
+        </div>
+        <div class="info-text">
+          <span class="info-label">Ajak Teman Sehat</span>
+          <span class="info-value">Bagikan Resep JamuKuat</span>
+        </div>
+        <ion-icon name="chevron-forward-outline" style="color: #666;"></ion-icon>
+      </div>
+    </div>
+
+    <!-- Tombol Logout -->
+    <div class="logout-section">
+      <ion-button expand="block" class="logout-btn" mode="md" (click)="logout()">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Keluar dari Akun
+      </ion-button>
+
+      <ion-button expand="block" fill="clear" color="danger" (click)="deleteAccount()" style="margin-top: 10px; font-weight: 700; --color: #eb445a;">
+        <ion-icon name="trash-outline" slot="start"></ion-icon>
+        Hapus Akun & Data Saya
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

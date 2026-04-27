@@ -1,0 +1,51 @@
+<ion-content [fullscreen]="true" class="login-content">
+  <div class="top-banner">
+    <div class="logo-container">
+      <div class="logo-circle">
+        <ion-icon name="medkit"></ion-icon>
+      </div>
+      <h1 class="brand-name">Modern Apothecary</h1>
+    </div>
+  </div>
+
+  <div class="login-form-container">
+    <div class="welcome-text">
+      <h2>Selamat Datang Kembali</h2>
+      <p>Silakan masuk untuk melanjutkan<br>perjalanan sehat Anda.</p>
+    </div>
+
+    <form>
+      <div class="custom-input-group">
+        <ion-label>USERNAME</ion-label>
+        <div class="input-wrapper">
+          <ion-icon class="prefix-icon" name="person-outline"></ion-icon>
+          <ion-input type="text" placeholder="Masukkan username" [(ngModel)]="username" name="username"></ion-input>
+        </div>
+      </div>
+
+      <div class="custom-input-group">
+        <ion-label>KATA SANDI</ion-label>
+        <div class="input-wrapper">
+          <ion-icon class="prefix-icon" name="lock-closed-outline"></ion-icon>
+          <ion-input [type]="showPassword ? 'text' : 'password'" placeholder="••••••••" [(ngModel)]="password" name="password"></ion-input>
+          <ion-icon class="suffix-icon" [name]="showPassword ? 'eye-outline' : 'eye-off-outline'"
+            (click)="togglePassword()"></ion-icon>
+        </div>
+      </div>
+
+      <div class="forgot-password">
+        <a (click)="forgotPassword()">Lupa Kata Sandi?</a>
+      </div>
+
+      <ion-button expand="block" class="login-btn" mode="md" (click)="login()">
+        Masuk <ion-icon name="arrow-forward-outline" slot="end"></ion-icon>
+      </ion-button>
+    </form>
+
+
+  </div>
+
+  <div class="footer-text">
+    Belum punya akun? <a routerLink="/register">Daftar sekarang</a>
+  </div>
+</ion-content>

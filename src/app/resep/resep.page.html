@@ -1,0 +1,129 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Eksplor Resep</ion-title>
+  </ion-toolbar>
+  <ion-toolbar>
+    <ion-searchbar 
+      placeholder="Cari energi, stamina, atau jahe..." 
+      [(ngModel)]="searchQuery" 
+      animated="true"
+      class="custom-searchbar">
+    </ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  
+  <!-- Kategori Chips (Filter Cepat) -->
+  <div class="category-scroll-wrapper">
+    <div class="category-scroll hide-scrollbar">
+      <div 
+        *ngFor="let cat of categories" 
+        class="cat-chip" 
+        [class.active]="selectedCategory === cat"
+        (click)="selectCategory(cat)">
+        <ion-icon [name]="cat === 'Semua' ? 'grid-outline' : 'leaf-outline'"></ion-icon>
+        <span>{{ cat }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="ion-padding">
+    <ion-skeleton-text animated style="width: 100%; height: 120px; border-radius: 20px; margin-bottom: 20px;" *ngFor="let i of [1,2,3]"></ion-skeleton-text>
+  </div>
+
+  <div *ngIf="!isLoading" class="resep-wrapper">
+    <div class="welcome-header" *ngIf="selectedCategory === 'Semua'">
+      <h2>Pilih Booster-mu 🌿</h2>
+      <p>Kumpulan resep alami untuk performa terbaikmu.</p>
+    </div>
+
+    <div class="welcome-header" *ngIf="selectedCategory !== 'Semua'">
+      <h2>{{ selectedCategory }} 🛡️</h2>
+      <p>Menampilkan {{ filteredResep.length }} resep untuk kategori ini.</p>
+    </div>
+    
+    <div class="card-grid">
+      <ion-card *ngFor="let resep of filteredResep; let i = index" class="premium-card">
+        <div class="card-glow"></div>
+        
+        <ion-card-header>
+          <div class="tag-container">
+            <ion-badge *ngFor="let tag of resep.tags" 
+                       [color]="tag === 'Tambah Stamina' ? 'success' : 'primary'" 
+                       mode="ios" 
+                       class="stamina-badge">
+              <ion-icon [name]="tag === 'Tambah Stamina' ? 'flash' : 'shield-checkmark'"></ion-icon>
+              {{ tag }}
+            </ion-badge>
+          </div>
+          <ion-card-title>{{ resep.name }}</ion-card-title>
+          <div class="benefit-tag" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <ion-icon name="heart" color="danger"></ion-icon>
+              <span>{{ resep.benefit }}</span>
+            </div>
+            
+            <!-- Tombol Hapus khusus Resep Saya -->
+            <ion-button *ngIf="selectedCategory === 'Resep Saya'" 
+                        fill="clear" 
+                        color="danger" 
+                        (click)="deleteUserRecipe(resep.id, $event)"
+                        style="--padding-end: 0; height: 24px; margin: 0;">
+              <ion-icon name="trash-outline" slot="icon-only" style="font-size: 18px;"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-header>
+        
+        <ion-card-content>
+          <div class="info-section">
+            <div class="info-item">
+              <div class="icon-box">
+                <ion-icon name="list-outline"></ion-icon>
+              </div>
+              <div class="text-box">
+                <label>Bahan-bahan</label>
+                <p>{{ resep.ingredients }}</p>
+              </div>
+            </div>
+
+            <div class="info-item" style="margin-top: 16px;">
+              <div class="icon-box step-icon">
+                <ion-icon name="flask-outline"></ion-icon>
+              </div>
+              <div class="text-box">
+                <label>Cara Pembuatan</label>
+                <p>{{ resep.steps }}</p>
+              </div>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Empty State jika kategori tidak punya data -->
+    <div class="empty-state" *ngIf="filteredResep.length === 0">
+      <ng-container *ngIf="selectedCategory === 'Resep Saya'">
+        <div class="empty-illustration">
+          <div class="blob-bg"></div>
+          <ion-icon name="book-outline" class="main-empty-icon"></ion-icon>
+        </div>
+        <h3>Belum Ada Resep Pribadi</h3>
+        <p>Anda belum membuat resep jamu rahasia sendiri. Ayo buat koleksi pertamamu sekarang!</p>
+        <ion-button expand="block" mode="ios" class="create-btn" routerLink="/tabs/profil">
+          <ion-icon name="add-outline" slot="start"></ion-icon>
+          Buat Resep Pertama Anda
+        </ion-button>
+      </ng-container>
+
+      <ng-container *ngIf="selectedCategory !== 'Resep Saya'">
+        <ion-icon name="search-outline"></ion-icon>
+        <h3>Belum ada resep...</h3>
+        <p>Resep untuk kategori "{{ selectedCategory }}" akan segera hadir!</p>
+        <ion-button fill="clear" color="primary" (click)="selectCategory('Semua')">Tampilkan Semua</ion-button>
+      </ng-container>
+    </div>
+  </div>
+
+</ion-content>

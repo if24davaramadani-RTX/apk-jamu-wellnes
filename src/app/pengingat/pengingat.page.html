@@ -1,0 +1,91 @@
+<ion-header [translucent]="true" class="ion-no-border">
+  <ion-toolbar>
+    <ion-title>Pengingat Minum</ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="header-section">
+    <h1>Jaga Kesehatanmu!</h1>
+    <p>Jangan terlewat jadwal minum jamu hari ini.</p>
+  </div>
+
+  <!-- Card Pengingat Terdekat -->
+  <div class="next-reminder" *ngIf="nextReminder">
+    <ion-card class="primary-card">
+      <ion-card-content>
+        <div class="upcoming-info">
+          <ion-icon name="time-outline" class="large-icon"></ion-icon>
+          <div class="text-content">
+            <h3>Pengingat Berikutnya</h3>
+            <h2>{{ nextReminder.time }} WIB</h2>
+            <p>{{ nextReminder.jamu_name }}</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <div class="next-reminder" *ngIf="!nextReminder">
+    <ion-card class="primary-card" style="background: var(--ion-color-step-150, #2a2a2a); box-shadow: none;">
+      <ion-card-content>
+        <div class="upcoming-info">
+          <ion-icon name="bed-outline" class="large-icon" style="color: #666;"></ion-icon>
+          <div class="text-content">
+            <h3 style="color: #aaa;">Pengingat Berikutnya</h3>
+            <h2 style="color: #888;">Tidak ada</h2>
+            <p style="color: #666;">Tambahkan jadwal baru di bawah</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <h2 class="section-title">Jadwal Anda</h2>
+
+  <ion-list lines="none" class="transparent-list">
+    <div *ngFor="let item of reminders">
+      <ion-item class="reminder-item" detail="false">
+        <div class="time-block">
+          <h2>{{ item.time }}</h2>
+        </div>
+        <ion-label>
+          <h3>{{ item.jamu_name }}</h3>
+          <p>{{ item.notes || 'Harian' }}</p>
+        </ion-label>
+        <div slot="end" style="display: flex; align-items: center; gap: 10px;">
+          <!-- Menggunakan item.active -->
+          <ion-toggle [checked]="item.active" color="success" (ionChange)="toggleActive(item)"></ion-toggle>
+          <ion-button fill="clear" color="danger" (click)="deleteReminder(item.id!)" style="margin: 0; --padding-start: 5px; --padding-end: 5px;">
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          </ion-button>
+        </div>
+      </ion-item>
+    </div>
+  </ion-list>
+
+  <!-- Empty State jika benar-benar tidak ada data -->
+  <div *ngIf="reminders.length === 0" class="empty-state-container">
+    <div class="illustration-wrapper">
+      <div class="glow-circle"></div>
+      <ion-icon name="notifications-off-outline" class="empty-icon"></ion-icon>
+    </div>
+    <h3>Jadwal Masih Kosong</h3>
+    <p>Tubuh bugar butuh jadwal teratur. Yuk, buat pengingat minum jamu pertamamu!</p>
+    <ion-button fill="outline" color="primary" mode="ios" (click)="addReminder()" class="btn-add-empty">
+      <ion-icon name="add-circle-outline" slot="start"></ion-icon>
+      Tambah Jadwal
+    </ion-button>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button color="primary" (click)="addReminder()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

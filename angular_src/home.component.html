@@ -1,0 +1,107 @@
+<div class="min-h-screen bg-[#121212] font-sans pb-20 selection:bg-[#E67E22]/30">
+  
+  <!-- App Bar -->
+  <header class="sticky top-0 bg-[#121212]/95 backdrop-blur-md z-50 px-5 pt-8 pb-4">
+    <div class="flex justify-between items-center mb-5">
+      <h1 class="text-white text-2xl font-bold tracking-tight">Jamu Sehat</h1>
+      <div class="w-11 h-11 bg-[#E67E22] rounded-full flex items-center justify-center text-white shadow-lg overflow-hidden border-2 border-[#1E1E1E]">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      </div>
+    </div>
+    
+    <!-- Search Bar -->
+    <div class="relative">
+      <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+        <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+        </svg>
+      </div>
+      <input type="text" placeholder="Cari jamu atau manfaat..." class="w-full bg-[#1E1E1E] text-white rounded-xl py-3.5 pl-11 pr-4 focus:outline-none focus:ring-1 focus:ring-[#E67E22] placeholder-gray-500 border border-transparent transition-all">
+    </div>
+  </header>
+
+  <main class="px-5 mt-2 flex flex-col gap-8">
+    
+    <!-- Greeting Section -->
+    <section>
+      <h2 class="text-white text-xl font-bold">Selamat pagi, {{ userName }} 👋</h2>
+      <p class="text-gray-400 text-sm mt-1">Semoga hari ini penuh kesehatan ya 🌿</p>
+    </section>
+
+    <!-- Streak Card -->
+    <section>
+      <div class="bg-[#1E1E1E] border border-[#E67E22] rounded-2xl p-4 flex items-center gap-4 shadow-lg shadow-[#E67E22]/5">
+        <div class="text-[#E67E22] text-3xl shrink-0 drop-shadow-md">🔥</div>
+        <p class="text-white text-sm font-medium leading-relaxed">Hebat! Kamu sudah minum jamu <span class="font-bold text-[#E67E22]">{{ streakDays }} hari</span> berturut-turut!</p>
+      </div>
+    </section>
+
+    <!-- Rekomendasi Hari Ini (Hero) -->
+    <section *ngIf="recommendedToday() as hero">
+      <div class="inline-block px-3 py-1.5 bg-[#E67E22]/10 rounded-md mb-3">
+        <span class="text-[#E67E22] text-[11px] font-bold tracking-wider">REKOMENDASI HARI INI</span>
+      </div>
+      
+      <div class="bg-gradient-to-br from-[#1E1E1E] to-[#121212] border border-gray-800 rounded-3xl p-6 relative overflow-hidden">
+        <!-- Abstract Decoration -->
+        <div class="absolute -right-8 -top-8 w-32 h-32 bg-[#27AE60]/10 rounded-full blur-2xl"></div>
+        <div class="absolute -left-8 -bottom-8 w-24 h-24 bg-[#E67E22]/10 rounded-full blur-2xl"></div>
+        
+        <div class="relative z-10">
+          <h3 class="text-white text-3xl font-extrabold">{{ hero.nama }}</h3>
+          <p class="text-gray-400 text-sm mt-2 max-w-[85%] leading-relaxed">{{ hero.manfaatSingkat }}</p>
+          
+          <div class="flex gap-3 mt-6">
+            <button class="flex-1 bg-[#E67E22] hover:bg-[#D35400] text-white text-sm font-bold py-3.5 rounded-xl transition-colors shadow-lg shadow-[#E67E22]/20 active:scale-95">
+              LIHAT DETAIL
+            </button>
+            <button (click)="setReminder()" class="flex-1 border-2 border-[#27AE60] text-[#27AE60] hover:bg-[#27AE60]/10 text-sm font-bold py-3.5 rounded-xl flex items-center justify-center gap-2 transition-colors active:scale-95">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              PENGINGAT
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cari Berdasarkan Manfaat -->
+    <section>
+      <h3 class="text-white text-lg font-bold mb-4">Cari Berdasarkan Manfaat</h3>
+      <div class="flex gap-3 overflow-x-auto pb-2 snap-x hide-scrollbar -mx-5 px-5">
+        <app-benefit-chip 
+          class="snap-start"
+          *ngFor="let cat of categories" 
+          [icon]="cat.icon" 
+          [label]="cat.label">
+        </app-benefit-chip>
+      </div>
+    </section>
+
+    <!-- Rekomendasi Untukmu -->
+    <section>
+      <h3 class="text-white text-lg font-bold mb-4">Rekomendasi Untukmu</h3>
+      <div class="flex gap-4 overflow-x-auto pb-4 snap-x hide-scrollbar -mx-5 px-5">
+        <app-jamu-card 
+          *ngFor="let jamu of recommendedForYou()" 
+          [jamu]="jamu">
+        </app-jamu-card>
+      </div>
+    </section>
+
+    <!-- Jamu Populer Minggu Ini -->
+    <section>
+      <h3 class="text-white text-lg font-bold mb-4">Jamu Populer Minggu Ini</h3>
+      <div class="flex flex-col gap-3">
+        <app-jamu-card 
+          *ngFor="let jamu of popularThisWeek()" 
+          [jamu]="jamu">
+        </app-jamu-card>
+      </div>
+    </section>
+
+  </main>
+</div>

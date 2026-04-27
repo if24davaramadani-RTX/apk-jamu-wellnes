@@ -1,0 +1,7 @@
+{
+  "name": "JamuKuat",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

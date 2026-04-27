@@ -1,0 +1,159 @@
+<ion-header class="ion-no-border home-header">
+  <ion-toolbar color="transparent">
+    <ion-title>Jamu Sehat</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/tabs/profil">
+        <ion-icon name="person-circle-outline" class="profile-icon"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <div class="search-container">
+    <ion-searchbar placeholder="Cari jamu atau manfaat..." animated="true" mode="md"
+      (ionInput)="onSearch($event)"></ion-searchbar>
+  </div>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="home-content">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="main-container">
+
+    <!-- Greeting Section -->
+    <div class="greeting-section">
+      <h2>{{ greeting }}, {{ userName }} 👋</h2>
+      <p>Semoga hari ini penuh kesehatan ya 🌿</p>
+    </div>
+
+    <!-- Streak Motivation -->
+    <div class="streak-motivation">
+      <div class="streak-icon">🔥</div>
+      <div class="streak-text">
+        Hebat! Kamu sudah minum jamu <strong>{{ streakDays }} hari</strong> berturut-turut!
+      </div>
+    </div>
+
+    <!-- Hero Card -->
+    <div class="hero-card" *ngIf="!isLoading">
+      <span class="badge">Rekomendasi Hari Ini</span>
+      <h3>{{ heroJamu.name }}</h3>
+      <p>{{ heroJamu.benefit || 'Tingkatkan imun tubuh dan segarkan badanmu' }}</p>
+      <div class="hero-actions">
+        <ion-button class="primary-btn" mode="md" (click)="lihatDetail()">LIHAT DETAIL</ion-button>
+        <ion-button class="secondary-btn" mode="md" fill="outline" (click)="setPengingat()">
+          <ion-icon name="alarm-outline" slot="start"></ion-icon> SET PENGINGAT
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Hero Card Loading -->
+    <div class="hero-card" *ngIf="isLoading">
+      <ion-skeleton-text animated
+        style="width: 120px; height: 22px; border-radius: 12px; margin-bottom: 16px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 60%; height: 28px; margin-bottom: 8px;"></ion-skeleton-text>
+      <ion-skeleton-text animated style="width: 85%; height: 16px; margin-bottom: 24px;"></ion-skeleton-text>
+      <div class="hero-actions">
+        <ion-skeleton-text animated style="width: 48%; height: 44px; border-radius: 12px;"></ion-skeleton-text>
+        <ion-skeleton-text animated style="width: 48%; height: 44px; border-radius: 12px;"></ion-skeleton-text>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="section-container">
+      <h3 class="section-title">Cari Berdasarkan Manfaat</h3>
+      <div class="horizontal-scroll hide-scrollbar">
+        <div class="category-chip" *ngFor="let cat of categories" (click)="filterKategori(cat)">
+          <ion-icon name="leaf-outline"></ion-icon>
+          <span>{{ cat }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recommended -->
+    <div class="section-container">
+      <h3 class="section-title">Rekomendasi Untukmu</h3>
+      <div class="horizontal-scroll hide-scrollbar" *ngIf="!isLoading">
+        <div class="jamu-card" *ngFor="let item of recommendedJamu" (click)="goToDetail(item)">
+          <div class="card-image-placeholder">
+            <img [src]="item.image || 'assets/pharmacy_herbs.png'" [alt]="item.name" class="recommended-img"
+              (error)="item.image = 'assets/pharmacy_herbs.png'" />
+          </div>
+          <div class="card-body">
+            <h4>{{ item.name }}</h4>
+          </div>
+        </div>
+      </div>
+
+      <div class="horizontal-scroll hide-scrollbar" *ngIf="isLoading">
+        <div class="jamu-card" *ngFor="let i of [1, 2, 3]">
+          <div class="card-image-placeholder">
+            <ion-skeleton-text animated style="width: 100%; height: 100%; margin: 0;"></ion-skeleton-text>
+          </div>
+          <div class="card-body">
+            <ion-skeleton-text animated style="width: 80%; height: 16px;"></ion-skeleton-text>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Popular -->
+    <div class="section-container">
+      <h3 class="section-title">Jamu Populer Minggu Ini</h3>
+      <div class="list-container" *ngIf="!isLoading">
+        <div class="jamu-list-item" *ngFor="let item of popularJamu" (click)="goToDetail(item)">
+          <div class="item-image">
+            <img [src]="item.image || 'assets/pharmacy_herbs.png'" [alt]="item.name" class="item-img"
+              (error)="item.image = 'assets/pharmacy_herbs.png'" />
+          </div>
+          <div class="item-info">
+            <h4>{{ item.name }}</h4>
+            <p class="desc">{{ item.benefit }}</p>
+          </div>
+          <div class="item-arrow">
+            <ion-icon name="chevron-forward-outline"></ion-icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="list-container" *ngIf="isLoading">
+        <div class="jamu-list-item" *ngFor="let i of [1, 2, 3, 4]">
+          <div class="item-image">
+            <ion-skeleton-text animated
+              style="width: 100%; height: 100%; margin: 0; border-radius: 8px;"></ion-skeleton-text>
+          </div>
+          <div class="item-info">
+            <ion-skeleton-text animated style="width: 60%; height: 16px; margin-bottom: 6px;"></ion-skeleton-text>
+            <ion-skeleton-text animated style="width: 90%; height: 12px;"></ion-skeleton-text>
+          </div>
+          <div class="item-arrow">
+            <ion-skeleton-text animated style="width: 20px; height: 20px; border-radius: 50%;"></ion-skeleton-text>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Video Resep -->
+    <div class="section-container" style="margin-bottom: 24px;">
+      <h3 class="section-title">buat resep dengan vidio</h3>
+      <div class="list-container">
+        <div class="jamu-list-item"
+          (click)="openVideo('https://www.youtube.com/results?search_query=playlist+resep+jamu+tradisional+lengkap')">
+          <div class="item-image"
+            style="background: rgba(255,0,0,0.1); display: flex; align-items: center; justify-content: center; border-radius: 8px;">
+            <ion-icon name="logo-youtube" style="font-size: 32px; color: #ff0000;"></ion-icon>
+          </div>
+          <div class="item-info">
+            <h4> Resep Jamu Pilihan</h4>
+            <p class="desc">Kumpulan video lengkap cara meracik jamu</p>
+          </div>
+          <div class="item-arrow">
+            <ion-icon name="open-outline" style="opacity: 0.7; font-size: 20px;"></ion-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</ion-content>
